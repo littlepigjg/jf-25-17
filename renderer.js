@@ -280,10 +280,17 @@ function bindEvents() {
 
   document.getElementById('logInterval').addEventListener('input', (e) => {
     document.getElementById('logIntervalValue').textContent = e.target.value + '秒';
+    updateStrategyPreview();
   });
 
   document.getElementById('maxFileSize').addEventListener('input', (e) => {
     document.getElementById('maxFileSizeValue').textContent = e.target.value + ' MB';
+    updateStrategyPreview();
+  });
+
+  document.getElementById('splitStrategy').addEventListener('change', (e) => {
+    updateStrategyUI(e.target.value);
+    updateStrategyPreview();
   });
 }
 
@@ -363,12 +370,14 @@ ipcRenderer.on('thresholds-data', (event, thresholds) => {
   
   if (thresholds.splitStrategy) {
     document.getElementById('splitStrategy').value = thresholds.splitStrategy;
+    updateStrategyUI(thresholds.splitStrategy);
   }
   if (thresholds.maxFileSize) {
     const sizeMB = Math.round(thresholds.maxFileSize / 1024 / 1024);
     document.getElementById('maxFileSize').value = sizeMB;
     document.getElementById('maxFileSizeValue').textContent = sizeMB + ' MB';
   }
+  updateStrategyPreview();
 });
 
 ipcRenderer.on('thresholds-updated', (event, thresholds) => {
@@ -868,4 +877,70 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function updateStrategyUI(strategy) {
+  const hintEl = document.getElementById('strategyHint');
+  const sizeContainer = document.getElementById('maxFileSizeContainer');
+
+  const hints = {
+    daily: '每天生成一个日志文件，文件按日期命名。适合低频采样场景，单日数据量不大的情况。',
+    size: '文件达到设定大小上限后立即创建新文件，文件名包含时间戳和序号。适合需要严格控制单文件大小的场景。',
+    hybrid: '先按日期分组，同一天内按大小进一步分割。兼顾按天管理的便利性和大小控制，推荐高频采样场景使用。'
+  };
+
+  hintEl.textContent = hints[strategy] || '';
+
+  if (strategy === 'daily') {
+    sizeContainer.classList.add('disabled');
+  } else {
+    sizeContainer.classList.remove('disabled');
+  }
+}
+
+function updateStrategyPreview() {
+  const intervalSec = parseInt(document.getElementById('logInterval').value) || 60;
+  const maxSizeMB = parseInt(document.getElementById('maxFileSize').value) || 50;
+  const strategy = document.getElementById('splitStrategy').value;
+
+  const recordsPerDay = Math.floor(86400 / intervalSec);
+  const bytesPerRecord = 1024;
+  const dailyBytes = recordsPerDay * bytesPerRecord;
+  const dailySizeMB = dailyBytes / 1024 / 1024;
+
+  let fileCountPerDay;
+  let avgFileSizeMB;
+  let fileNameExample;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const timeStr = 'HH-MM-SS';
+
+  if (strategy === 'daily') {
+    fileCountPerDay = 1;
+    avgFileSizeMB = dailySizeMB;
+    fileNameExample = `performance_log_${today}.jsonl`;
+  } else if (strategy === 'size') {
+    fileCountPerDay = Math.max(1, Math.ceil(dailySizeMB / maxSizeMB));
+    avgFileSizeMB = dailySizeMB / fileCountPerDay;
+    fileNameExample = `performance_log_${today}_${timeStr}.jsonl`;
+  } else {
+    fileCountPerDay = Math.max(1, Math.ceil(dailySizeMB / maxSizeMB));
+    avgFileSizeMB = dailySizeMB / fileCountPerDay;
+    fileNameExample = `performance_log_${today}_1.jsonl`;
+  }
+
+  document.getElementById('previewSampleRate').textContent =
+    intervalSec < 60 ? `每 ${intervalSec} 秒 1 条` : `每 ${(intervalSec / 60).toFixed(1)} 分钟 1 条`;
+  document.getElementById('previewDailyRecords').textContent = recordsPerDay.toLocaleString() + ' 条';
+  document.getElementById('previewDailySize').textContent =
+    dailySizeMB >= 1024
+      ? `约 ${(dailySizeMB / 1024).toFixed(2)} GB`
+      : `约 ${dailySizeMB.toFixed(2)} MB`;
+  document.getElementById('previewFileCount').textContent =
+    fileCountPerDay === 1 ? '1 个/天' : `约 ${fileCountPerDay} 个/天`;
+  document.getElementById('previewAvgSize').textContent =
+    avgFileSizeMB >= 1024
+      ? `约 ${(avgFileSizeMB / 1024).toFixed(2)} GB`
+      : `约 ${avgFileSizeMB.toFixed(2)} MB`;
+  document.getElementById('previewFileName').textContent = fileNameExample;
 }

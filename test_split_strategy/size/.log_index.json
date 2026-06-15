@@ -1,0 +1,44 @@
+[
+  {
+    "file": "size_log_2026-06-15_09-44-26.jsonl",
+    "startTime": "2026-06-15T09:44:26.563Z",
+    "endTime": "2026-06-15T09:44:26.564Z",
+    "recordCount": 10,
+    "size": 2961
+  },
+  {
+    "file": "size_log_2026-06-15_09-44-26_1.jsonl",
+    "startTime": "2026-06-15T09:44:26.765Z",
+    "endTime": "2026-06-15T09:44:26.763Z",
+    "recordCount": 10,
+    "size": 2961
+  },
+  {
+    "file": "size_log_2026-06-15_09-44-27.jsonl",
+    "startTime": "2026-06-15T09:44:27.061Z",
+    "endTime": "2026-06-15T09:44:27.060Z",
+    "recordCount": 10,
+    "size": 2961
+  },
+  {
+    "file": "size_log_2026-06-15_09-44-27_1.jsonl",
+    "startTime": "2026-06-15T09:44:27.269Z",
+    "endTime": "2026-06-15T09:44:27.269Z",
+    "recordCount": 10,
+    "size": 2969
+  },
+  {
+    "file": "size_log_2026-06-15_09-44-27_2.jsonl",
+    "startTime": "2026-06-15T09:44:27.470Z",
+    "endTime": "2026-06-15T09:44:27.469Z",
+    "recordCount": 10,
+    "size": 2958
+  },
+  {
+    "file": "size_log_2026-06-15_09-44-28.jsonl",
+    "startTime": "2026-06-15T09:44:28.179Z",
+    "endTime": "2026-06-15T09:44:28.180Z",
+    "recordCount": 0,
+    "size": 1
+  }
+]

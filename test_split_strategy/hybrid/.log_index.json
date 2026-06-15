@@ -1,0 +1,44 @@
+[
+  {
+    "file": "hybrid_log_2026-06-15.jsonl",
+    "startTime": "2026-06-15T09:44:28.184Z",
+    "endTime": "2026-06-15T09:44:28.184Z",
+    "recordCount": 12,
+    "size": 3551
+  },
+  {
+    "file": "hybrid_log_2026-06-15_1.jsonl",
+    "startTime": "2026-06-15T09:44:28.393Z",
+    "endTime": "2026-06-15T09:44:28.393Z",
+    "recordCount": 12,
+    "size": 3554
+  },
+  {
+    "file": "hybrid_log_2026-06-15_2.jsonl",
+    "startTime": "2026-06-15T09:44:28.603Z",
+    "endTime": "2026-06-15T09:44:28.602Z",
+    "recordCount": 12,
+    "size": 3554
+  },
+  {
+    "file": "hybrid_log_2026-06-15_3.jsonl",
+    "startTime": "2026-06-15T09:44:28.854Z",
+    "endTime": "2026-06-15T09:44:28.852Z",
+    "recordCount": 12,
+    "size": 3548
+  },
+  {
+    "file": "hybrid_log_2026-06-15_4.jsonl",
+    "startTime": "2026-06-15T09:44:29.053Z",
+    "endTime": "2026-06-15T09:44:29.052Z",
+    "recordCount": 12,
+    "size": 3552
+  },
+  {
+    "file": "hybrid_log_2026-06-15_5.jsonl",
+    "startTime": "2026-06-15T09:44:29.778Z",
+    "endTime": "2026-06-15T09:44:29.779Z",
+    "recordCount": 0,
+    "size": 1
+  }
+]

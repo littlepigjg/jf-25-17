@@ -243,14 +243,45 @@
             <div class="setting-item">
               <label>文件分割策略</label>
               <select id="splitStrategy">
-                <option value="daily">按天分割</option>
-                <option value="size">按大小分割</option>
+                <option value="daily">按天分割（每天一个文件）</option>
+                <option value="size">按大小分割（达到上限立即分割）</option>
+                <option value="hybrid">按天+大小混合（推荐高频采样）</option>
               </select>
+              <div class="strategy-hint" id="strategyHint"></div>
             </div>
-            <div class="setting-item">
+            <div class="setting-item" id="maxFileSizeContainer">
               <label>单文件最大大小 (MB)</label>
               <input type="range" id="maxFileSize" min="10" max="500" step="10" value="50">
               <span class="threshold-value" id="maxFileSizeValue">50 MB</span>
+            </div>
+            <div class="strategy-preview" id="strategyPreview">
+              <h4>策略效果预估</h4>
+              <div class="preview-grid">
+                <div class="preview-item">
+                  <span class="preview-label">采样频率</span>
+                  <span class="preview-value" id="previewSampleRate">每 60 秒 1 条</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">预计每日记录数</span>
+                  <span class="preview-value" id="previewDailyRecords">1,440 条</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">每日数据总量</span>
+                  <span class="preview-value" id="previewDailySize">约 1.4 MB</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">预计文件数量</span>
+                  <span class="preview-value" id="previewFileCount">1 个/天</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">单文件平均大小</span>
+                  <span class="preview-value" id="previewAvgSize">约 1.4 MB</span>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">文件名示例</span>
+                  <span class="preview-value" id="previewFileName">log_2026-06-15.jsonl</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

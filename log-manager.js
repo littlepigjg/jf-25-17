@@ -5,7 +5,7 @@ const { EventEmitter } = require('events');
 const DEFAULT_OPTIONS = {
   splitStrategy: 'daily',
   maxFileSize: 50 * 1024 * 1024,
-  maxRecordsPerFile: 10000,
+  maxRecordsPerFile: 100000,
   logDir: '',
   baseName: 'performance_log',
   flushInterval: 5000,
@@ -101,7 +101,9 @@ class LogManager extends EventEmitter {
     const timeStr = now.toISOString().slice(11, 19).replace(/:/g, '-');
     
     let baseFileName;
-    if (this.options.splitStrategy === 'size') {
+    const strategy = this.options.splitStrategy;
+
+    if (strategy === 'size') {
       baseFileName = `${this.options.baseName}_${dateStr}_${timeStr}`;
     } else {
       baseFileName = `${this.options.baseName}_${dateStr}`;
@@ -140,26 +142,42 @@ class LogManager extends EventEmitter {
   }
 
   async _checkAndSplit(pendingRecords = []) {
+    if (this.currentRecordCount === 0) return;
+
     let needSplit = false;
+    const strategy = this.options.splitStrategy;
 
-    if (this.currentRecordCount > 0) {
-      if (this.options.splitStrategy === 'daily') {
-        const today = new Date().toISOString().slice(0, 10);
-        const fileDay = this.currentFileStartDate.toISOString().slice(0, 10);
-        if (today !== fileDay) {
-          needSplit = true;
-        }
+    if (strategy === 'daily') {
+      const today = new Date().toISOString().slice(0, 10);
+      const fileDay = this.currentFileStartDate.toISOString().slice(0, 10);
+      if (today !== fileDay) {
+        needSplit = true;
       }
-
+    } else if (strategy === 'size') {
       const pendingSize = pendingRecords.reduce((sum, r) => {
         return sum + Buffer.byteLength(JSON.stringify(r) + '\n', this.options.encoding);
       }, 0);
-
       const projectedSize = this.currentFileSize + pendingSize;
       const projectedCount = this.currentRecordCount + pendingRecords.length;
-
-      if (projectedSize >= this.options.maxFileSize || projectedCount >= this.options.maxRecordsPerFile) {
+      if (projectedSize >= this.options.maxFileSize || 
+          (this.options.maxRecordsPerFile > 0 && projectedCount >= this.options.maxRecordsPerFile)) {
         needSplit = true;
+      }
+    } else if (strategy === 'hybrid') {
+      const today = new Date().toISOString().slice(0, 10);
+      const fileDay = this.currentFileStartDate.toISOString().slice(0, 10);
+      if (today !== fileDay) {
+        needSplit = true;
+      } else {
+        const pendingSize = pendingRecords.reduce((sum, r) => {
+          return sum + Buffer.byteLength(JSON.stringify(r) + '\n', this.options.encoding);
+        }, 0);
+        const projectedSize = this.currentFileSize + pendingSize;
+        const projectedCount = this.currentRecordCount + pendingRecords.length;
+        if (projectedSize >= this.options.maxFileSize || 
+            (this.options.maxRecordsPerFile > 0 && projectedCount >= this.options.maxRecordsPerFile)) {
+          needSplit = true;
+        }
       }
     }
 
